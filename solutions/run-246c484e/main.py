@@ -1,11 +1,11 @@
 import math
 import os
 import json
+from typing import Dict, Any
 
-# Constants
 GRAVITY = 9.81  # m/s^2
 
-def get_inputs() -> dict:
+def get_inputs() -> Dict[str, Any]:
     defaults = {
         "frame_dimensions": "150x150x10",
         "prototype_material": "PLA",
@@ -48,25 +48,19 @@ def solve() -> bool:
     # -----------------------------------------------
     
     # --- CALCULATION SECTION ---
-    # Calculate the required thrust to achieve 4.2G acceleration
-    required_thrust = frame_mass * (4.2 * GRAVITY)
-    
-    # Check if the total thrust from all motors can achieve this acceleration
-    total_available_thrust = max_thrust * number_of_motors
-    
-    # Determine if the frame can handle the required thrust
-    can_handle_thrust = total_available_thrust >= required_thrust
-    
-    # Calculate the stress on the frame using the production material
-    stress_on_frame = required_thrust / (float(frame_dimensions.split('x')[0]) * float(frame_dimensions.split('x')[1]))
-    
-    # Check if the material strength is sufficient
-    is_material_sufficient = stress_on_frame <= carbon_fiber_strength
-    
-    # Final result: Can the frame handle the 4.2G acceleration without failing?
-    result = can_handle_thrust and is_material_sufficient
-    
-    print(f"Calculated Result: {result}")
+    # Calculate the force experienced during a 4.2G punch-out
+    acceleration_due_to_punch_out = 4.2 * GRAVITY  # m/s^2
+    force_on_frame = frame_mass * acceleration_due_to_punch_out  # Newtons
+
+    # Check if the frame can handle the force
+    # Assume the production material is Carbon Fiber for final production
+    if production_material == "Carbon Fiber":
+        material_strength = carbon_fiber_strength
+
+    can_withstand_force = force_on_frame <= material_strength
+
+    # Print the result
+    print(f"Calculated Result: {can_withstand_force}")
     return True
 
 if __name__ == "__main__":
