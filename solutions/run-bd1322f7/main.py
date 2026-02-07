@@ -3,6 +3,7 @@ import os
 import json
 from typing import Dict, Any
 
+# Constants
 GRAVITY = 9.81  # m/s^2
 
 def get_inputs() -> Dict[str, Any]:
@@ -44,23 +45,17 @@ def solve() -> bool:
     # -----------------------------------------------
     
     # --- CALCULATION SECTION ---
-    # Calculate the acceleration during a 4.2G punch-out
-    acceleration = 4.2 * gravity  # m/s^2
+    # Calculate the acceleration due to thrust
+    acceleration_due_to_thrust = max_thrust / frame_mass  # m/s^2
     
-    # Calculate the force experienced by the frame
-    force = frame_mass * acceleration  # N (Newton)
+    # Calculate the total acceleration during a 4.2G punch-out
+    total_acceleration = 4.2 * gravity  # m/s^2
     
-    # Calculate the stress on the frame
-    # Assuming a simple rectangular frame for stress calculation
-    width, height, depth = map(float, frame_dimensions.split('x'))
-    cross_sectional_area = width * frame_thickness  # mm^2
-    stress = force / (cross_sectional_area * 1e-6)  # Convert mm^2 to m^2 for stress in Pascals
-    
-    # Check if the material can withstand the stress
-    can_withstand = stress <= material_strength
+    # Check if the frame can handle the total acceleration
+    can_handle_acceleration = total_acceleration <= material_strength / material_density
     
     # Print the result
-    result = "Pass" if can_withstand else "Fail"
+    result = "Pass" if can_handle_acceleration else "Fail"
     print(f"Calculated Result: {result}")
     
     return True
