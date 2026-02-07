@@ -46,17 +46,16 @@ def solve() -> bool:
     
     # --- CALCULATION SECTION ---
     # Calculate the acceleration due to thrust
-    acceleration_due_to_thrust = max_thrust / frame_mass  # m/s^2
+    thrust_acceleration = max_thrust / frame_mass  # in m/s^2
     
     # Calculate the total acceleration during a 4.2G punch-out
-    total_acceleration = 4.2 * gravity  # m/s^2
+    punch_out_acceleration = 4.2 * gravity  # in m/s^2
     
-    # Check if the frame can handle the total acceleration
-    can_handle_acceleration = total_acceleration <= material_strength / material_density
+    # Ensure the frame can handle the punch-out acceleration
+    can_handle_punch_out = punch_out_acceleration <= material_strength / material_density
     
     # Print the result
-    result = "Pass" if can_handle_acceleration else "Fail"
-    print(f"Calculated Result: {result}")
+    print(f"Calculated Result: {can_handle_punch_out}")
     
     return True
 
