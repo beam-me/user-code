@@ -1,12 +1,12 @@
 import math
+import numpy as np
 import os
 import json
-from typing import Dict, Any
 
 # Constants
-GRAVITY = 9.81
+GRAVITY = 9.81  # m/s^2
 
-def get_inputs() -> Dict[str, Any]:
+def get_inputs() -> dict:
     defaults = {
         "frame_dimensions": "150x150x50",
         "prototype_material": "PLA",
@@ -58,19 +58,22 @@ def solve() -> bool:
     
     # --- CALCULATION SECTION ---
     # Calculate the force experienced during a 4.2G punch-out
-    punch_out_acceleration = 4.2 * GRAVITY
-    force_during_punch_out = drone_weight * punch_out_acceleration
-    
-    # Check if the frame can handle the force without failing
-    frame_cross_sectional_area = arm_width * frame_thickness
-    stress_on_frame = force_during_punch_out / frame_cross_sectional_area
-    
-    # Compare the stress with the yield strength of the production material
-    if stress_on_frame < yield_strength_production:
-        result = "Frame can handle the punch-out acceleration without failing."
+    acceleration_due_to_thrust = 4.2 * GRAVITY  # m/s^2
+    force_due_to_thrust = drone_weight * acceleration_due_to_thrust  # N
+
+    # Calculate the cross-sectional area of the frame arms
+    arm_cross_sectional_area = arm_width * frame_thickness  # mm^2
+    arm_cross_sectional_area_m2 = arm_cross_sectional_area * 1e-6  # convert mm^2 to m^2
+
+    # Calculate stress on the frame arms
+    stress_on_arms = force_due_to_thrust / arm_cross_sectional_area_m2  # Pa
+
+    # Check if the stress is within the yield strength of the production material
+    if stress_on_arms <= yield_strength_production:
+        result = "Frame can handle the 4.2G punch-out acceleration."
     else:
-        result = "Frame cannot handle the punch-out acceleration; redesign needed."
-    
+        result = "Frame cannot handle the 4.2G punch-out acceleration."
+
     print(f"Calculated Result: {result}")
     return True
 
