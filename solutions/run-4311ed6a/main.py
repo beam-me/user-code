@@ -1,8 +1,8 @@
 import math
-import numpy as np
 import os
 import json
 
+# Constants
 GRAVITY = 9.81  # m/s^2
 
 def get_inputs() -> dict:
@@ -19,7 +19,7 @@ def get_inputs() -> dict:
         "carbon_fiber_modulus_of_elasticity": "70",
         "mass_distribution": "evenly",
         "structural_design_details": "standard beam thickness with reinforced joints",
-        "gravity": 9.81
+        "gravity": GRAVITY
     }
     env_input = os.environ.get("BEAM_INPUTS")
     if env_input:
@@ -50,21 +50,29 @@ def solve() -> bool:
     # -----------------------------------------------
     
     # --- CALCULATION SECTION ---
-    # Calculate the total thrust
-    total_thrust = max_thrust * motor_count
-    
-    # Calculate the maximum acceleration the frame should withstand
-    max_acceleration = 4.2 * GRAVITY  # 4.2G punch-out acceleration
-    
-    # Calculate the force exerted on the frame during max acceleration
-    force_on_frame = frame_mass * max_acceleration
-    
-    # Check if the frame can handle the force without failing
-    can_withstand_force = total_thrust >= force_on_frame
-    
-    # Print the result
-    print(f"Calculated Result: {can_withstand_force}")
-    
+    # Calculate the force experienced during a 4.2G punch-out
+    acceleration_due_to_punch_out = 4.2 * gravity  # m/s^2
+    force_on_frame = frame_mass * acceleration_due_to_punch_out  # N
+
+    # Check if the frame can handle this force
+    # Assuming a simple model where the tensile strength is the limiting factor
+    # Convert frame dimensions from string to numerical values
+    dimensions = list(map(float, frame_dimensions.split('x')))
+    cross_sectional_area = dimensions[0] * dimensions[1]  # mm^2 to m^2 conversion needed
+
+    # Convert mm^2 to m^2 for cross-sectional area
+    cross_sectional_area_m2 = cross_sectional_area * 1e-6
+
+    # Calculate the stress on the frame
+    stress_on_frame = force_on_frame / cross_sectional_area_m2  # N/m^2
+
+    # Check if the stress is within the tensile strength of the production material
+    if stress_on_frame <= carbon_fiber_tensile_strength * 1e6:  # Convert MPa to N/m^2
+        result = "Frame can handle the 4.2G punch-out acceleration."
+    else:
+        result = "Frame cannot handle the 4.2G punch-out acceleration."
+
+    print(f"Calculated Result: {result}")
     return True
 
 if __name__ == "__main__":
