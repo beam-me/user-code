@@ -48,18 +48,25 @@ def solve() -> bool:
     # -----------------------------------------------
     
     # --- CALCULATION SECTION ---
-    # Calculate the total thrust
-    total_thrust = max_thrust * number_of_motors
+    # Calculate the required thrust to achieve 4.2G acceleration
+    required_thrust = frame_mass * (4.2 * GRAVITY)
     
-    # Calculate the required force to withstand a 4.2G punch-out
-    required_force = frame_mass * 4.2 * GRAVITY
+    # Check if the total thrust from all motors can achieve this acceleration
+    total_available_thrust = max_thrust * number_of_motors
     
-    # Check if the frame can handle the required force
-    can_withstand = required_force <= material_strength
+    # Determine if the frame can handle the required thrust
+    can_handle_thrust = total_available_thrust >= required_thrust
     
-    # Print the result
-    print(f"Calculated Result: {'Can withstand' if can_withstand else 'Cannot withstand'}")
+    # Calculate the stress on the frame using the production material
+    stress_on_frame = required_thrust / (float(frame_dimensions.split('x')[0]) * float(frame_dimensions.split('x')[1]))
     
+    # Check if the material strength is sufficient
+    is_material_sufficient = stress_on_frame <= carbon_fiber_strength
+    
+    # Final result: Can the frame handle the 4.2G acceleration without failing?
+    result = can_handle_thrust and is_material_sufficient
+    
+    print(f"Calculated Result: {result}")
     return True
 
 if __name__ == "__main__":
