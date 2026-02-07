@@ -3,7 +3,7 @@ import os
 import json
 from typing import Dict, Any
 
-# Define physical constants
+# Constants
 GRAVITY = 9.81
 
 def get_inputs() -> Dict[str, Any]:
@@ -61,15 +61,15 @@ def solve() -> bool:
     punch_out_acceleration = 4.2 * GRAVITY
     force_during_punch_out = drone_weight * punch_out_acceleration
     
-    # Calculate the stress on the frame
-    frame_cross_sectional_area = frame_thickness * arm_width
+    # Check if the frame can handle the force without failing
+    frame_cross_sectional_area = arm_width * frame_thickness
     stress_on_frame = force_during_punch_out / frame_cross_sectional_area
     
-    # Check if the stress is within the yield strength of the production material
-    if stress_on_frame <= yield_strength_production:
-        result = "Frame design is sufficient for 4.2G punch-out acceleration."
+    # Compare the stress with the yield strength of the production material
+    if stress_on_frame < yield_strength_production:
+        result = "Frame can handle the punch-out acceleration without failing."
     else:
-        result = "Frame design is NOT sufficient for 4.2G punch-out acceleration."
+        result = "Frame cannot handle the punch-out acceleration; redesign needed."
     
     print(f"Calculated Result: {result}")
     return True
